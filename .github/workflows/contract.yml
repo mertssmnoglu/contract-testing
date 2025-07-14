@@ -1,0 +1,44 @@
+name: Contract
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Build and Run Server
+        env:
+          API_SECRET: ${{ secrets.API_SECRET }}
+          GIN_MODE: release
+        run: |
+          go build -o server ./
+          ./server &
+          sleep 2
+
+      - name: Run Schemathesis Tests
+        uses: schemathesis/action@1f15936316e0742005bf69657b5909ac68f04cb3 # v2.1.0
+        with:
+          schema: './openapi.yml'
+          base-url: 'http://localhost:8080'
+          version: 'latest'
+          config-file: 'schemathesis.toml'
+        env:
+          API_SECRET: ${{ secrets.API_SECRET }}
