@@ -42,7 +42,7 @@ func main() {
 
 	// Health check endpoint
 	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "OK")
+		c.JSON(http.StatusOK, 1)
 	})
 
 	// Secret endpoint with JWT authentication
