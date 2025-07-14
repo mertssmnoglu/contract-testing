@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Health Check API
+  description: API to check the health status of the server
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:{PORT}
+    description: Local server
+    variables:
+      PORT:
+        default: '8080'
+        description: Port number for the server
+        enum:
+          - '8080'
+          - '3000'
+          - '5000'
+
+paths:
+  /health:
+    get:
+      summary: Check if the server is healthy or not
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "OK"
+  /secret:
+    get:
+      summary: Secret endpoint that requires JWT authentication
+      responses:
+        '200':
+          description: Access granted to secret endpoint
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "OK"
+        '401':
+          description: Unauthorized - Missing or invalid Authorization header
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unable to parse 'Authorization' header"
+        '403':
+          description: Forbidden - Invalid token provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid token provided"
+      security:
+        - type: http
+          scheme: bearer
+          bearerFormat: JWT
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

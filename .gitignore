@@ -1,0 +1,4 @@
+# schemathesis directories, used for API Contract testing
+.hypothesis/
+schemathesis-report/
+.schemathesis-report/
